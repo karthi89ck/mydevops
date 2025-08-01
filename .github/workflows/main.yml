@@ -1,0 +1,35 @@
+name: PR Email Notification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "PR #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
+          body: |
+            A pull request activity has occurred in your repository:
+            
+            Repository: ${{ github.repository }}
+            PR Title: ${{ github.event.pull_request.title }}
+            PR Number: #${{ github.event.pull_request.number }}
+            Created by: ${{ github.event.pull_request.user.login }}
+            PR URL: ${{ github.event.pull_request.html_url }}
+            
+            ---
+            This is an automated message sent by GitHub Actions.
+          to: karthi89ck@gmail.com
+          from: GitHub Actions
+          secure: true
