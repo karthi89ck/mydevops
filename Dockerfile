@@ -1,7 +1,7 @@
-#Dockerfile for ubuntu with apache
-FROM ubuntu:latest
-RUN apt-get update -y
-RUN apt-get install apache2 -y
-COPY index.html /var/www/html
-EXPOSE 80
-CMD ["apachectl", "-D", "FOREGROUND"]
+FROM python:3.10-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY app.py .
+EXPOSE 5000
+CMD ["python", "app.py"]
