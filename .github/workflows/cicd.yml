@@ -36,11 +36,12 @@ jobs:
     
     # Deploy to EC2
     - name: Deploy on EC2 via SSH
-      uses: appleboy/ssh-action@v1
+      uses: appleboy/ssh-action@v1.8.1
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.E2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
         script: |
           cd /home/ubuntu/mywebapp
           docker-compose pull web   # Pull the updated image
