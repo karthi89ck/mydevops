@@ -1,36 +1,39 @@
-from flask import Flask, request, jsonify
-import sqlite3
+from flask import Flask, render_template, request, redirect
+import psycopg2
+import os
 
 app = Flask(__name__)
-DB_NAME = 'users.db'
 
-def init_db():
-    with sqlite3.connect(DB_NAME) as conn:
-        conn.execute('''CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            dob DATE NOT NULL,
-            occupation TEXT NOT NULL
-        )''')
+def get_db_conn():
+    return psycopg2.connect(
+        host=os.environ['DB_HOST'],
+        dbname=os.environ['DB_NAME'],
+        user=os.environ['DB_USER'],
+        password=os.environ['DB_PASSWORD']
+    )
 
-@app.route('/add', methods=['POST'])
-def add_user():
-    data = request.get_json()
-    with sqlite3.connect(DB_NAME) as conn:
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        dob = request.form['dob']
+        occupation = request.form['occupation']
+        conn = get_db_conn()
         cur = conn.cursor()
-        cur.execute("INSERT INTO users (name,dob,occupation) VALUES (?,?,?)",
-                    (data['name'], data['dob'], data['occupation']))
+        cur.execute("INSERT INTO users (name, dob, occupation) VALUES (%s, %s, %s)",
+                    (name, dob, occupation))
         conn.commit()
-    return jsonify({'status': 'success'})
-
-@app.route('/users', methods=['GET'])
-def get_users():
-    with sqlite3.connect(DB_NAME) as conn:
+        cur.close()
+        conn.close()
+        return redirect('/')
+    else:
+        conn = get_db_conn()
         cur = conn.cursor()
         cur.execute("SELECT name, dob, occupation FROM users")
         users = cur.fetchall()
-    return jsonify(users)
+        cur.close()
+        conn.close()
+        return render_template('index.html', users=users)
 
-if __name__ == '__main__':
-    init_db()
-    app.run(host='0.0.0.0', port=8082)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
