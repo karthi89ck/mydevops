@@ -12,6 +12,23 @@ def get_db_conn():
         password=os.environ['DB_PASSWORD']
     )
 
+def init_db():
+    conn = get_db_conn()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            dob DATE NOT NULL,
+            occupation TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+init_db()  # <-- Ensures the table is created if missing
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
