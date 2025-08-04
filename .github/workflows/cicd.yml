@@ -29,7 +29,9 @@ jobs:
         context: ./app
         file: ./app/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/mywebapp:latest
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/mywebapp:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/mywebapp:${{ github.sha }}
 
     # Optional: Build and push custom DB image if needed
     # - name: Build and push db image ...
