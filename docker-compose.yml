@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    restart: always
+  # For production, recommend a real DB like Postgres/MySQL, but for demo sticking to sqlite3
