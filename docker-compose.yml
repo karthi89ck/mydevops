@@ -12,7 +12,8 @@ services:
     ports:
       - "5432:5432"
   web:
-    build: ./app
+    #build: ./app
+    image: ${DOCKERHUB_USERNAME}/mywebapp:${IMAGE_TAG}
     restart: always
     environment:
       DB_HOST: db
