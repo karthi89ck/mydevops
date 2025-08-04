@@ -46,8 +46,8 @@ jobs:
         port: 22
         envs: IMAGE_TAG
         script: |
-          cd /home/ubuntu/mydevops
           export IMAGE_TAG=${{ github.sha }}
           export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          cd /home/ubuntu/mydevops
           docker-compose pull web
           docker-compose up -d
