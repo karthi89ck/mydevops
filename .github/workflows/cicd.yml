@@ -1,0 +1,47 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push app image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./app
+        file: ./app/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/mywebapp:latest
+
+    # Optional: Build and push custom DB image if needed
+    # - name: Build and push db image ...
+    
+    # Deploy to EC2
+    - name: Deploy on EC2 via SSH
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.E2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /home/ubuntu/mywebapp
+          docker-compose pull web   # Pull the updated image
+          docker-compose up -d      # Restart the containers
