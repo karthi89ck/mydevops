@@ -43,6 +43,6 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          cd /home/ubuntu/mywebapp
+          cd /home/ubuntu/mydevops
           docker-compose pull web   # Pull the updated image
           docker-compose up -d      # Restart the containers
