@@ -46,5 +46,7 @@ jobs:
         port: 22
         script: |
           cd /home/ubuntu/mydevops
-          docker-compose pull web   # Pull the updated image
-          docker-compose up -d      # Restart the containers
+          export IMAGE_TAG=${{ github.sha }}
+          export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          docker-compose pull web
+          docker-compose up -d
